@@ -36,14 +36,41 @@ void GameApplication::createWindow(const string& windowTitle,const unsigned int 
 
 void GameApplication::OnBeginRender()
 {
+	//Set the clear colour(background)
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	//clear the colour and depth buffer
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
-
+vec2 pos1 = { 0,0 };
+vec2 pos2 = { -0.5,0 };
 void GameApplication::render()
 {
+	//Switch to ModelView
+	glMatrixMode(GL_MODELVIEW);
+
+	//Reset using the Identity Matrix
+	glLoadIdentity();
+	
+	//Translate to -5.0f on z-axis
+	glTranslatef(-0.5f, 0.0f, -5.0f);
+	//Begin drawing triangles
+	glBegin(GL_TRIANGLES);
+	glColor3f(0.4f, 0.0f, 0.0f); //Colour of the vertices
+
+	glVertex3f(pos1.x - 1.0f, pos1.y + 1.0f, 0.0f); // Top
+	glVertex3f(pos1.x - 1.0f, pos1.y - 1.0f, 0.0f); // Bottom Left
+	glVertex3f(pos1.x + 1.0f, pos1.y - 1.0f, 0.0f); // Bottom Right
+
+	glColor3f(0.0f, 0.3f, 0.5f);
+	glVertex3f(pos2.x + 0.0f, pos2.y + 1.0f, 0.0f); // TopLeft
+	glVertex3f(pos2.x + 2.0f, pos2.y + 1.0f, 0.0f); // TopRight
+	glVertex3f(pos2.x + 2.0f, pos2.y - 1.0f, 0.0f); // BtmR
+	glEnd();
 }
 
 void GameApplication::OnEndRender()
 {
+	SDL_GL_SwapWindow(m_pWindow);
 }
 
 void GameApplication::update()
@@ -88,6 +115,68 @@ void GameApplication::initGraphics()
 	//Turn on best perspective correction
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
+	//Set our viewport
+	setViewport((int)m_WindowWidth, (int)m_WindowHeight);
+}
+
+void GameApplication::setViewport(int width, int height)
+{
+	//screen ratio
+	GLfloat ratio;
+
+	//make sure height is always above 1
+	if (height == 0) {
+		height = 1;
+	}
+	//calculate screen ration
+	ratio = (GLfloat)width / (GLfloat)height;
+
+	//Setup viewport
+	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
+
+	//Change to projection matrix mode
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	//Calculate perspective matrix, using gLM
+	mat4 projectionMatrix = perspective(radians(45.0f), ratio, 0.1f, 100.0f);
+	glLoadMatrixf(&projectionMatrix[0][0]);
+
+	//Switch to ModelView
+	glMatrixMode(GL_MODELVIEW);
+
+	//Reset using the Identity Matrix
+	glLoadIdentity();
+}
+
+void GameApplication::handleMovement(SDL_Keycode key)
+{
+	float speed = 0.05;
+	if (key == SDLK_w) {
+		pos1.y += speed;
+	}
+	if (key == SDLK_s) {
+		pos1.y -= speed;
+	}
+	if (key == SDLK_a) {
+		pos1.x -= speed;
+	}
+	if (key == SDLK_d) {
+		pos1.x += speed;
+	}
+
+	if (key == SDLK_UP) {
+		pos2.y += speed;
+	}
+	if (key == SDLK_DOWN) {
+		pos2.y -= speed;
+	}
+	if (key == SDLK_LEFT) {
+		pos2.x -= speed;
+	}
+	if (key == SDLK_RIGHT) {
+		pos2.x += speed;
+	}
 }
 
 void GameApplication::parseConfig(int args,char * arg[])
@@ -192,6 +281,8 @@ void GameApplication::run()
 						LOG(ERROR, "Can't Maximize %s", SDL_GetError());
 					}
 				}
+				handleMovement(event.key.keysym.sym);
+
 			}
 			if (event.type == SDL_WINDOWEVENT)
 			{

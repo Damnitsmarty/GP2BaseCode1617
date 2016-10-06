@@ -41,6 +41,11 @@ public:
 	virtual void update();
 
 	void initGraphics();
+	void setViewport(int width, int height);
+
+
+
+	void handleMovement(SDL_Keycode key);
 
 protected:
 	//SDL Windows
