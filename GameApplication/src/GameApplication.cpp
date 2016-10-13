@@ -41,31 +41,10 @@ void GameApplication::OnBeginRender()
 	//clear the colour and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
-vec2 pos1 = { 0,0 };
-vec2 pos2 = { -0.5,0 };
+
 void GameApplication::render()
 {
-	//Switch to ModelView
-	glMatrixMode(GL_MODELVIEW);
 
-	//Reset using the Identity Matrix
-	glLoadIdentity();
-	
-	//Translate to -5.0f on z-axis
-	glTranslatef(-0.5f, 0.0f, -5.0f);
-	//Begin drawing triangles
-	glBegin(GL_TRIANGLES);
-	glColor3f(0.4f, 0.0f, 0.0f); //Colour of the vertices
-
-	glVertex3f(pos1.x - 1.0f, pos1.y + 1.0f, 0.0f); // Top
-	glVertex3f(pos1.x - 1.0f, pos1.y - 1.0f, 0.0f); // Bottom Left
-	glVertex3f(pos1.x + 1.0f, pos1.y - 1.0f, 0.0f); // Bottom Right
-
-	glColor3f(0.0f, 0.3f, 0.5f);
-	glVertex3f(pos2.x + 0.0f, pos2.y + 1.0f, 0.0f); // TopLeft
-	glVertex3f(pos2.x + 2.0f, pos2.y + 1.0f, 0.0f); // TopRight
-	glVertex3f(pos2.x + 2.0f, pos2.y - 1.0f, 0.0f); // BtmR
-	glEnd();
 }
 
 void GameApplication::OnEndRender()
@@ -77,13 +56,21 @@ void GameApplication::update()
 {
 }
 
+void GameApplication::initScene()
+{
+}
+
+void GameApplication::destroyScene()
+{
+}
+
 void GameApplication::initGraphics()
 {
 	//OpenGl Context
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-		SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,	SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,	SDL_GL_CONTEXT_PROFILE_CORE);
 
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 	m_GLcontext = SDL_GL_CreateContext(m_pWindow);
 
@@ -134,49 +121,11 @@ void GameApplication::setViewport(int width, int height)
 	//Setup viewport
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 
-	//Change to projection matrix mode
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	//Calculate perspective matrix, using gLM
-	mat4 projectionMatrix = perspective(radians(45.0f), ratio, 0.1f, 100.0f);
-	glLoadMatrixf(&projectionMatrix[0][0]);
-
-	//Switch to ModelView
-	glMatrixMode(GL_MODELVIEW);
-
-	//Reset using the Identity Matrix
-	glLoadIdentity();
 }
 
 void GameApplication::handleMovement(SDL_Keycode key)
 {
-	float speed = 0.05;
-	if (key == SDLK_w) {
-		pos1.y += speed;
-	}
-	if (key == SDLK_s) {
-		pos1.y -= speed;
-	}
-	if (key == SDLK_a) {
-		pos1.x -= speed;
-	}
-	if (key == SDLK_d) {
-		pos1.x += speed;
-	}
 
-	if (key == SDLK_UP) {
-		pos2.y += speed;
-	}
-	if (key == SDLK_DOWN) {
-		pos2.y -= speed;
-	}
-	if (key == SDLK_LEFT) {
-		pos2.x -= speed;
-	}
-	if (key == SDLK_RIGHT) {
-		pos2.x += speed;
-	}
 }
 
 void GameApplication::parseConfig(int args,char * arg[])
@@ -222,6 +171,7 @@ bool GameApplication::init(int args,char * arg[])
 	m_WindowTitle=m_Options.getOption("WindowTitle");
 	createWindow(m_WindowTitle,m_WindowWidth,m_WindowHeight,m_WindowCreationFlags);
 	initGraphics();
+	initScene();
 
 	m_bIsActive=true;
 	return true;
@@ -232,6 +182,7 @@ void GameApplication::OnQuit()
 	//set our boolean which controls the loop to false
 	m_bIsRunning = false;
 
+	destroyScene();
 	SDL_GL_DeleteContext(m_GLcontext);
 	SDL_DestroyWindow(m_pWindow);
 	SDL_Quit();
