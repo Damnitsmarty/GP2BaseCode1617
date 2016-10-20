@@ -161,8 +161,12 @@ bool GameApplication::init(int args,char * arg[])
 	// init everyting - SDL, if it is nonzero we have a problem
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 	{
-		//std::cout << "ERROR SDL_Init " << SDL_GetError() << std::endl;
-    LOG(ERROR,"SDL can't be initialised %s",SDL_GetError());
+		LOG(ERROR,"SDL can't be initialised %s",SDL_GetError());
+		return false;
+	}
+	if (IMG_Init(IMG_INIT_PNG) != 0)
+	{
+		LOG(ERROR, "IMG can't be initialised %s", IMG_GetError());
 		return false;
 	}
 
@@ -185,6 +189,7 @@ void GameApplication::OnQuit()
 	destroyScene();
 	SDL_GL_DeleteContext(m_GLcontext);
 	SDL_DestroyWindow(m_pWindow);
+	IMG_Quit();
 	SDL_Quit();
 	CLOSELOG();
 }

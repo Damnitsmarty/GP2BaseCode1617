@@ -23,6 +23,8 @@ using namespace std;
 #include <GL/glew.h>
 //SDL
 #include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_ttf.h>
 #include <SDL_opengl.h>
 
 #define GLM_FORCE_RADIANS
