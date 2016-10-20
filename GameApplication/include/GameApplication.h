@@ -3,14 +3,14 @@
 
 #include "Common.h"
 #include "Shader.h"
-
+#include "Texture.h"
 //Game Application class, this basically wraps up the initialisation of a game
 //this will be the base class of any game we are making. You should override this
 //and some of the methods to create your own game
 class GameApplication:public NonCopyable
 {
 public:
-	//Constructor
+	//Constructor	
 	GameApplication();
 	//Virtual Deconstructor
 	virtual ~GameApplication();

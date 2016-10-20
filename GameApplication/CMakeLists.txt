@@ -10,7 +10,7 @@ find_package(SDL2_TTF REQUIRED)
 
 add_subdirectory(Utils)
 
-add_library(GameApplication STATIC src/GameApplication.cpp src/Shader.cpp include/Common.h include/GameApplication.h include/Shader.h)
+add_library(GameApplication STATIC src/GameApplication.cpp src/Shader.cpp src/Texture.cpp include/Common.h include/GameApplication.h include/Shader.h include/Texture.h)
 
 include_directories(GameApplication include/ Utils/include ${SDL2_INCLUDE_DIR} ${TINYXML_INCLUDE_DIR} ${OPENGL_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL2IMAGE_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR})
 # create the program

@@ -164,11 +164,14 @@ bool GameApplication::init(int args,char * arg[])
 		LOG(ERROR,"SDL can't be initialised %s",SDL_GetError());
 		return false;
 	}
-	if (IMG_Init(IMG_INIT_PNG) != 0)
+
+	int imageInitFlags = IMG_INIT_JPG | IMG_INIT_PNG;
+	int returnInitFlags = IMG_Init(imageInitFlags);
+	if (((returnInitFlags) & (imageInitFlags)) != imageInitFlags)
 	{
-		LOG(ERROR, "IMG can't be initialised %s", IMG_GetError());
-		return false;
+		LOG(ERROR, "SDL_Image Init %s", IMG_GetError());
 	}
+
 
 	m_WindowWidth=m_Options.getOptionAsInt("WindowWidth");
 	m_WindowHeight=m_Options.getOptionAsInt("WindowHeight");

@@ -1,9 +1,12 @@
 #include "MyGame.h"
 const std::string ASSET_PATH = "assets";
 const std::string SHADER_PATH = "/shaders";
+const std::string TEXTURE_PATH = "/textures";
+
 
 struct Vertex {
 	float x, y, z;
+	float tu, tv;
 };
 
 MyGame::MyGame()
@@ -20,16 +23,33 @@ MyGame::~MyGame()
 
 void MyGame::initScene()
 {
+	//texture init
 	GameApplication::initScene();
 	Vertex verts[] = {
-		{-0.5f,-0.5f,0.0f},
-		{0.5f,-0.5f,0.0f },
-		{0.0f,0.5f, 0.0f}
+		{-0.5f,	-0.5f,	0.0f,	0.0f,	0.0f },
+		{0.5f,	-0.5f,	0.0f,	0.0f,	0.0f },
+		{-0.5f,	0.5f,	0.0f,	0.0f,	0.0f },
+		{0.5f,	0.5f,	0.0f,	0.0f,	0.0f },
+		{0.5f,	-0.5f,	0.0f,	0.0f,	0.0f },
+		{-0.5f,	0.5f,	0.0f,	0.0f,	0.0f }
 	};
+	string texturePath = ASSET_PATH + TEXTURE_PATH + "/texture.png";
+	m_Texture = loadTextureFromFile(texturePath);
+
+	//GL Sampler
+	glGenSamplers(1, &m_Sampler);
+	glSamplerParameteri(m_Sampler, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	glSamplerParameteri(m_Sampler, GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glSamplerParameteri(m_Sampler, GL_TEXTURE_WRAP_S,GL_CLAMP);
+	glSamplerParameteri(m_Sampler, GL_TEXTURE_WRAP_T,GL_CLAMP);
+
+
+	glBindTexture(GL_TEXTURE_2D, m_Texture);
+	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glGenBuffers(1, &m_VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(Vertex), verts, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(Vertex), verts, GL_STATIC_DRAW);
 
 	glGenVertexArrays(1, &m_VAO);
 	glBindVertexArray(m_VAO);
@@ -37,6 +57,9 @@ void MyGame::initScene()
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), NULL);
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(3*sizeof(float)));
 
 	//Define shader objects
 	GLuint vertexShaderProgram = 0;
@@ -76,7 +99,7 @@ void MyGame::render()
 		mat4 MVP = m_ProjMatrix*m_ViewMatrix*m_ModelMatrix;
 		glUniformMatrix4fv(MVPLocation, 1,GL_FALSE, glm::value_ptr(MVP));
 	}
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void MyGame::update()

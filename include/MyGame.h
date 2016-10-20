@@ -7,7 +7,8 @@ class MyGame:public GameApplication
 {
 public:
 	GLuint m_ShaderProgram;
-	
+	GLuint m_Texture;
+	GLuint m_Sampler;
 	MyGame();
 	
 
