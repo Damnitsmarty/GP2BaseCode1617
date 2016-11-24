@@ -1,9 +1,9 @@
 #include "MyGame.h"
 
 struct Vertex {
-	float x, y, z;
-	float r, g, b, a;
-	float tu, tv;
+	vec3 position;
+	vec4 colour;
+	vec2 uv;
 };
 
 const std::string ASSET_PATH = "assets";
@@ -23,12 +23,12 @@ MyGame::~MyGame()
 void MyGame::initScene()
 {
 	Vertex verts[] = {
-	{-0.5f, -0.5f, 0.0f,1.0f,1.0f,1.0f,1.0f,0.0f,3.0f},
-	{0.5f, -0.5f, 0.0f,1.0f,1.0f,1.0f,1.0f,3.0f,3.0f},
-	{-0.5f,  0.5f, 0.0f,1.0f,1.0f,1.0f,1.0f,0.0f,0.0f},
-		{-0.5f, 0.5f, 0.0f,1.0f,1.0f,1.0f,1.0f,0.0f,0.0f},
-		{0.5f, 0.5f, 0.0f,1.0f,1.0f,1.0f,1.0f,3.0f,0.0f},
-		{0.5f,  -0.5f, 0.0f,1.0f,1.0f,1.0f,1.0f,3.0f,3.0f}
+		{vec3(-0.5f, -0.5f, 0.0f),vec4(1.0f,1.0f,1.0f,1.0f),vec2(0.0f,1.0f) },
+		{vec3(0.5f, -0.5f, 0.0f),vec4(1.0f,1.0f,1.0f,1.0f),vec2(1.0f,1.0f) },
+		{vec3(-0.5f,  0.5f, 0.0f),vec4(1.0f,1.0f,1.0f,1.0f),vec2(0.0f,0.0f) },
+		{vec3(-0.5f, 0.5f, 0.0f),vec4(1.0f,1.0f,1.0f,1.0f),vec2(0.0f,0.0f) },
+		{vec3(0.5f, 0.5f, 0.0f),vec4(1.0f,1.0f,1.0f,1.0f),vec2(1.0f,0.0f) },
+		{vec3(0.5f,  -0.5f, 0.0f),vec4(1.0f,1.0f,1.0f,1.0f),vec2(1.0f,1.0f) }
 	};
 
 	glGenBuffers(1, &m_VBO);
@@ -43,10 +43,10 @@ void MyGame::initScene()
 		NULL);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-		(void**)(3 * sizeof(float)));
+		(void**)(offsetof(Vertex,colour)));
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-		(void**)(7 * sizeof(float)));
+		(void**)(offsetof(Vertex,uv)));
 
 
 	GLuint vertexShaderProgram = 0;
